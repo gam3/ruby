@@ -3925,8 +3925,15 @@ regexp		: tREGEXP_BEG regexp_contents tREGEXP_END
 		    {
 		    /*%%%*/
 			int options = $3;
-			NODE *node = $2;
 			NODE *list, *prev;
+			NODE *node = $2;
+		    /*%
+			VALUE re = $2, opt = $3, src = 0, err;
+			int options = 0;
+		    %*/
+			heredoc_dedent($2);
+			heredoc_indent = 0;
+		    /*%%%*/
 			if (!node) {
 			    node = NEW_LIT(reg_compile(STR_NEW0(), options));
 			}
@@ -3981,8 +3988,6 @@ regexp		: tREGEXP_BEG regexp_contents tREGEXP_END
 			}
 			$$ = node;
 		    /*%
-			VALUE re = $2, opt = $3, src = 0, err;
-			int options = 0;
 			if (ripper_is_node_yylval(re)) {
 			    $2 = RNODE(re)->nd_rval;
 			    src = RNODE(re)->nd_cval;
@@ -6797,6 +6802,11 @@ parser_here_document(struct parser_params *parser, NODE *here)
     if (was_bol() && whole_match_p(eos, len, indent)) {
 	dispatch_heredoc_end();
 	heredoc_restore(lex_strterm);
+	if (func & STR_FUNC_REGEXP) {
+	    set_yylval_num(regx_options());
+	    dispatch_scan_event(tREGEXP_END);
+	    return tREGEXP_END;
+	} // else
 	return tSTRING_END;
     }
 
