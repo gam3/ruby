@@ -116,6 +116,7 @@ rb_iseq_mark(const rb_iseq_t *iseq)
 	rb_gc_mark(body->location.label);
 	rb_gc_mark(body->location.base_label);
 	rb_gc_mark(body->location.path);
+	rb_gc_mark(body->location.path_array);
 	RUBY_MARK_UNLESS_NULL(body->location.absolute_path);
 	RUBY_MARK_UNLESS_NULL((VALUE)body->parent_iseq);
     }
@@ -221,6 +222,7 @@ iseq_location_setup(rb_iseq_t *iseq, VALUE path, VALUE absolute_path, VALUE name
 {
     rb_iseq_location_t *loc = &iseq->body->location;
     RB_OBJ_WRITE(iseq, &loc->path, path);
+    RB_OBJ_WRITE(iseq, &loc->path_array, Qnil);
     if (RTEST(absolute_path) && rb_str_cmp(path, absolute_path) == 0) {
 	RB_OBJ_WRITE(iseq, &loc->absolute_path, path);
     }
@@ -272,16 +274,27 @@ prepare_iseq_build(rb_iseq_t *iseq,
 		   const rb_compile_option_t *option)
 {
     VALUE coverage = Qfalse;
+    VALUE path_array = Qnil;
 
     iseq->body->type = type;
     set_relation(iseq, parent);
 
     name = rb_fstring(name);
-    path = rb_fstring(path);
+    if (TYPE(path) == T_ARRAY) {
+        path_array = path;
+	path = rb_fstring(rb_ary_entry(path_array, 0));
+fprintf(stderr, "-------------------------------- %d, %s\n", __LINE__, __FILE__);
+    } else {
+	path = rb_fstring(path);
+    }
     if (RTEST(absolute_path)) absolute_path = rb_fstring(absolute_path);
     iseq_location_setup(iseq, path, absolute_path, name, first_lineno);
     if (iseq != iseq->body->local_iseq) {
 	RB_OBJ_WRITE(iseq, &iseq->body->location.base_label, iseq->body->local_iseq->body->location.label);
+    }
+    if (path_array != Qnil ) {
+	RB_OBJ_WRITE(iseq, &iseq->body->location.path_array, path_array);
+fprintf(stderr, "-------------------------------- %d, %s\n", __LINE__, __FILE__);
     }
     RB_OBJ_WRITE(iseq, &iseq->body->mark_ary, iseq_mark_ary_create(0));
 

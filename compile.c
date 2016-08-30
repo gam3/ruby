@@ -1116,6 +1116,9 @@ new_child_iseq(rb_iseq_t *iseq, NODE *node,
 {
     rb_iseq_t *ret_iseq;
 
+    VALUE path = iseq_path(iseq);
+    VALUE path_array = iseq->body->location.path_array;
+
     debugs("[new_child_iseq]> ---------------------------------------\n");
     ret_iseq = rb_iseq_new_with_opt(node, name,
 				    iseq_path(iseq), iseq_absolute_path(iseq),
@@ -6163,6 +6166,17 @@ iseq_compile_each(rb_iseq_t *iseq, LINK_ANCHOR *ret, NODE * node, int poped)
 	if (poped) {
 	    ADD_INSN(ret, line, pop);
 	}
+	break;
+      }
+      case NODE_FILES: {
+	VALUE path_array = iseq->body->location.path_array;
+	rb_iseq_location_t *loc = &iseq->body->location;
+	if (TYPE( path_array ) != T_NIL)
+	    rb_bug("NODE_FILE: path array must be nil");
+	path_array = node->u1.value;
+	if (TYPE( path_array ) != T_ARRAY)
+	    rb_bug("NODE_FILES: must be array");
+	RB_OBJ_WRITE(iseq, &loc->path_array, path_array);
 	break;
       }
       default:

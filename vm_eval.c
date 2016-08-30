@@ -1332,6 +1332,7 @@ eval_string_with_cref(VALUE self, VALUE src, VALUE scope, rb_cref_t *const cref_
 	    absolute_path = rb_fstring(absolute_path);
 
 	/* make eval iseq */
+// GAM3
 	iseq = rb_iseq_compile_with_option(src, fname, absolute_path, INT2FIX(line), base_block, Qnil);
 
 	if (!iseq) {
@@ -2126,6 +2127,18 @@ rb_f_local_variables(void)
     return local_var_list_finish(&vars);
 }
 
+#define FILE_LINE_MASK ((UINT_MAX >> FILE_CNT_BITS))
+#define FILE_LINE_BITS ((sizeof(unsigned int) * 8) - FILE_CNT_BITS)
+
+VALUE
+rb_vm_get_sourcefilename(const rb_control_frame_t *cfp)
+{
+    VALUE file;
+
+    file = cfp->iseq->body->location.absolute_path;
+    return file;
+}
+
 /*
  *  call-seq:
  *     block_given?   -> true or false
@@ -2169,7 +2182,10 @@ rb_current_realfilepath(void)
     rb_thread_t *th = GET_THREAD();
     rb_control_frame_t *cfp = th->cfp;
     cfp = vm_get_ruby_level_caller_cfp(th, RUBY_VM_PREVIOUS_CONTROL_FRAME(cfp));
-    if (cfp != 0) return cfp->iseq->body->location.absolute_path;
+    if (cfp != 0) {
+//      return cfp->iseq->body->location.absolute_path;
+        return rb_vm_get_sourcefilename(cfp);
+    }
     return Qnil;
 }
 
