@@ -250,10 +250,18 @@ location_base_label_m(VALUE self)
 static VALUE
 location_path(rb_backtrace_location_t *loc)
 {
+    VALUE file;
+    unsigned int idx;
+
     switch (loc->type) {
       case LOCATION_TYPE_ISEQ:
       case LOCATION_TYPE_ISEQ_CALCED:
-	return loc->body.iseq.iseq->body->location.path;
+	file = loc->body.iseq.iseq->body->location.path;
+//	if (TYPE(loc->body.iseq.iseq->body->location.path_array) == T_ARRAY) {
+//	    idx = location_file_idx(loc);
+//	    file = rb_ary_entry(loc->body.iseq.iseq->body->location.path_array, idx);
+//	}
+	return file;
       case LOCATION_TYPE_CFUNC:
 	if (loc->body.cfunc.prev_loc) {
 	    return location_path(loc->body.cfunc.prev_loc);
@@ -725,7 +733,7 @@ oldbt_iter_iseq(void *ptr, const rb_control_frame_t *cfp)
     VALUE file = arg->filename = iseq->body->location.path;
     VALUE name = iseq->body->location.label;
     int lineno = arg->lineno = calc_lineno(iseq, pc);
-
+//fprintf(stderr, "\n----\n%d\n", lineno);
     (arg->func)(arg->data, file, lineno, name);
 }
 
@@ -736,7 +744,7 @@ oldbt_iter_cfunc(void *ptr, const rb_control_frame_t *cfp, ID mid)
     VALUE file = arg->filename;
     VALUE name = rb_id2str(mid);
     int lineno = arg->lineno;
-
+//fprintf(stderr, "\n----\n%d\n", lineno);
     (arg->func)(arg->data, file, lineno, name);
 }
 
@@ -1019,7 +1027,6 @@ Init_vm_backtrace(void)
     rb_define_alloc_func(rb_cBacktrace, backtrace_alloc);
     rb_undef_method(CLASS_OF(rb_cBacktrace), "new");
     rb_marshal_define_compat(rb_cBacktrace, rb_cArray, backtrace_dump_data, backtrace_load_data);
-
     /*
      *	An object representation of a stack frame, initialized by
      *	Kernel#caller_locations.

@@ -46,7 +46,7 @@ class TestMagicLine < Test::Unit::TestCase
     assert_equal("test001.rb", __FILE__)
   end
 
-  def test_parser_file_4
+  def test_parser_file_5
     # -*- line: "test 002.rb" 1014 -*-
     assert_equal(__LINE__, 1014)
     assert_equal("test 002.rb", __FILE__)

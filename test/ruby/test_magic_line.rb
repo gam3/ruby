@@ -15,12 +15,12 @@ class TestMagicLine < Test::Unit::TestCase
     $VERBOSE = @verbose
   end
 
-  def test_parser
+  def test_parser_1
     o = Object.new
     assert_equal(101, o.instance_eval(%Q|# -*- line: 101 -*-\n __LINE__ |))
   end
 
-  def test_parser
+  def test_parser_2
     o = Object.new
     assert_equal("file.rb", o.instance_eval(%Q|# -*- line: file.rb 101 -*-\n__FILE__|))
   end

@@ -1287,7 +1287,6 @@ eval_string_with_cref(VALUE self, VALUE src, VALUE scope, rb_cref_t *const cref_
 
     file = filename ? filename : rb_source_location(&lineno);
     line = lineno;
-
     {
 	rb_cref_t *cref = cref_arg;
 	rb_binding_t *bind = 0;
@@ -1334,7 +1333,6 @@ eval_string_with_cref(VALUE self, VALUE src, VALUE scope, rb_cref_t *const cref_
 	    absolute_path = rb_fstring(absolute_path);
 
 	/* make eval iseq */
-// GAM3
 	iseq = rb_iseq_compile_with_option(src, fname, absolute_path, INT2FIX(line), base_block, Qnil);
 
 	if (!iseq) {

@@ -786,11 +786,13 @@ static VALUE parser_heredoc_dedent(struct parser_params*,VALUE);
 # define rb_warn2L(l,fmt,a,b)     WARN_CALL(WARN_ARGS_L(l, fmt, 3), (a), (b))
 # define rb_warn3L(l,fmt,a,b,c)   WARN_CALL(WARN_ARGS_L(l, fmt, 4), (a), (b), (c))
 # define rb_warn4L(l,fmt,a,b,c,d) WARN_CALL(WARN_ARGS_L(l, fmt, 5), (a), (b), (c), (d))
+#if 0
 # define rb_warning0L(l,fmt)         WARNING_CALL(WARNING_ARGS_L(l, fmt, 1))
 # define rb_warning1L(l,fmt,a)       WARNING_CALL(WARNING_ARGS_L(l, fmt, 2), (a))
 # define rb_warning2L(l,fmt,a,b)     WARNING_CALL(WARNING_ARGS_L(l, fmt, 3), (a), (b))
 # define rb_warning3L(l,fmt,a,b,c)   WARNING_CALL(WARNING_ARGS_L(l, fmt, 4), (a), (b), (c))
 # define rb_warning4L(l,fmt,a,b,c,d) WARNING_CALL(WARNING_ARGS_L(l, fmt, 5), (a), (b), (c), (d))
+#endif
 #ifdef RIPPER
 static ID id_warn, id_warning;
 # define WARN_S(s) STR_NEW2(s)
@@ -809,8 +811,8 @@ static void ripper_compile_error(struct parser_params*, const char *fmt, ...);
 # define WARN_S(s) s
 # define WARN_I(i) i
 # define PRIsWARN PRIsVALUE
-# define WARN_ARGS(fmt,n) WARN_ARGS_L(ruby_sourceline,fmt,n)
-# define WARN_ARGS_L(l,fmt,n) ruby_sourcefile, (l), (fmt)
+# define WARN_ARGS(fmt,n) WARN_ARGS_L(disp_ruby_sourceline,fmt,n)
+# define WARN_ARGS_L(l,fmt,n) disp_ruby_sourcefile, FIX_LINE(l), (fmt)
 # define WARN_CALL rb_compile_warn
 # define WARNING_ARGS(fmt,n) WARN_ARGS(fmt,n)
 # define WARNING_ARGS_L(l,fmt,n) WARN_ARGS_L(l,fmt,n)
@@ -11181,8 +11183,8 @@ parser_compile_error(struct parser_params *parser, const char *fmt, ...)
     va_start(ap, fmt);
     parser->error_buffer =
 	rb_syntax_error_append(parser->error_buffer,
-			       ruby_sourcefile_string,
-			       ruby_sourceline,
+			       disp_ruby_sourcefile_string,
+			       disp_ruby_sourceline,
 			       rb_long2int(lex_p - lex_pbeg),
 			       current_enc, fmt, ap);
     va_end(ap);
