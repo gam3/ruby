@@ -11,6 +11,8 @@
 
 **********************************************************************/
 
+int rb_vm_get_sourceline_unmasked(const rb_control_frame_t *cfp);
+
 struct local_var_list {
     VALUE tbl;
 };
@@ -2136,6 +2138,11 @@ rb_vm_get_sourcefilename(const rb_control_frame_t *cfp)
     VALUE file;
 
     file = cfp->iseq->body->location.absolute_path;
+    if (TYPE(cfp->iseq->body->location.path_array) == T_ARRAY) {
+        unsigned int idx = rb_vm_get_sourceline_unmasked(cfp) >> FILE_LINE_BITS;
+//FIXMEfprintf(stderr, "rb_vm_get_sourcefilename %u\n", idx);
+	file = rb_ary_entry(cfp->iseq->body->location.path_array, idx);
+    }
     return file;
 }
 

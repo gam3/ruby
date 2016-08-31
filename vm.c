@@ -1217,7 +1217,7 @@ rb_sourcefilename(void)
     rb_control_frame_t *cfp = rb_vm_get_ruby_level_next_cfp(th, th->cfp);
 
     if (cfp) {
-	return cfp->iseq->body->location.path;
+        return rb_vm_get_sourcefilename(cfp);
     }
     else {
 	return Qnil;
@@ -1231,7 +1231,8 @@ rb_sourcefile(void)
     rb_control_frame_t *cfp = rb_vm_get_ruby_level_next_cfp(th, th->cfp);
 
     if (cfp) {
-	return RSTRING_PTR(cfp->iseq->body->location.path);
+//FIXMEfprintf(stderr, "rb_sourcefile ---------------------------\n");
+	return RSTRING_PTR(rb_vm_get_sourcefilename(cfp));
     }
     else {
 	return 0;
@@ -1260,7 +1261,7 @@ rb_source_location(int *pline)
 
     if (cfp) {
 	if (pline) *pline = rb_vm_get_sourceline(cfp);
-	return cfp->iseq->body->location.path;
+	return rb_vm_get_sourcefilename(cfp);
     }
     else {
 	if (pline) *pline = 0;

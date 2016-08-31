@@ -43,7 +43,7 @@ class TestMagicLine < Test::Unit::TestCase
     }
   end
 
-if nil
+if true
 
   def test_compile_error_line
     o = Object.new

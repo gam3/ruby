@@ -283,7 +283,7 @@ prepare_iseq_build(rb_iseq_t *iseq,
     if (TYPE(path) == T_ARRAY) {
         path_array = path;
 	path = rb_fstring(rb_ary_entry(path_array, 0));
-fprintf(stderr, "-------------------------------- %d, %s\n", __LINE__, __FILE__);
+//FIXMEfprintf(stderr, "-------------------------------- %d, %s\n", __LINE__, __FILE__);
     } else {
 	path = rb_fstring(path);
     }
@@ -294,7 +294,7 @@ fprintf(stderr, "-------------------------------- %d, %s\n", __LINE__, __FILE__)
     }
     if (path_array != Qnil ) {
 	RB_OBJ_WRITE(iseq, &iseq->body->location.path_array, path_array);
-fprintf(stderr, "-------------------------------- %d, %s\n", __LINE__, __FILE__);
+//FIXMEfprintf(stderr, "-------------------------------- %d, %s\n", __LINE__, __FILE__);
     }
     RB_OBJ_WRITE(iseq, &iseq->body->mark_ary, iseq_mark_ary_create(0));
 
