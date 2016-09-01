@@ -2188,8 +2188,7 @@ rb_current_realfilepath(void)
     rb_control_frame_t *cfp = th->cfp;
     cfp = vm_get_ruby_level_caller_cfp(th, RUBY_VM_PREVIOUS_CONTROL_FRAME(cfp));
     if (cfp != 0) {
-//      return cfp->iseq->body->location.absolute_path;
-        return rb_vm_get_sourcefilename(cfp);
+        return cfp->iseq->body->location.absolute_path;
     }
     return Qnil;
 }

@@ -5,7 +5,7 @@ require 'stringio'
 require 'tmpdir'
 require 'tempfile'
 
-class TestMagicLine < Test::Unit::TestCase
+class TestMagicLineDirect < Test::Unit::TestCase
   def setup
     @verbose = $VERBOSE
     $VERBOSE = nil
@@ -50,5 +50,12 @@ class TestMagicLine < Test::Unit::TestCase
     # -*- line: "test 002.rb" 1014 -*-
     assert_equal(__LINE__, 1014)
     assert_equal("test 002.rb", __FILE__)
+  end
+
+  def test_thread_backtrace_location
+    # -*- line: bob.rb 100 -*-
+    l = caller_locations(0)[0];
+    assert_equal('bob.rb', l.path);
+    assert_equal(100, l.lineno);
   end
 end

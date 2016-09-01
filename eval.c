@@ -1636,6 +1636,7 @@ Init_eval(void)
     rb_define_global_function("__method__", rb_f_method_name, 0);
     rb_define_global_function("__callee__", rb_f_callee_name, 0);
     rb_define_global_function("__dir__", f_current_dirname, 0);
+    rb_define_global_function("__file__", rb_current_realfilepath, 0);
 
     rb_define_method(rb_cModule, "include", rb_mod_include, -1);
     rb_define_method(rb_cModule, "prepend", rb_mod_prepend, -1);

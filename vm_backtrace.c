@@ -257,10 +257,12 @@ location_path(rb_backtrace_location_t *loc)
       case LOCATION_TYPE_ISEQ:
       case LOCATION_TYPE_ISEQ_CALCED:
 	file = loc->body.iseq.iseq->body->location.path;
-//	if (TYPE(loc->body.iseq.iseq->body->location.path_array) == T_ARRAY) {
-//	    idx = location_file_idx(loc);
-//	    file = rb_ary_entry(loc->body.iseq.iseq->body->location.path_array, idx);
-//	}
+	if (location_file_idx(loc) > 0 && TYPE(loc->body.iseq.iseq->body->location.path_array) != T_ARRAY)
+	    fprintf(stderr, "\n-- BoB - %x -\n", location_file_idx(loc));
+	if (TYPE(loc->body.iseq.iseq->body->location.path_array) == T_ARRAY) {
+	    idx = location_file_idx(loc);
+	    file = rb_ary_entry(loc->body.iseq.iseq->body->location.path_array, idx);
+	}
 	return file;
       case LOCATION_TYPE_CFUNC:
 	if (loc->body.cfunc.prev_loc) {

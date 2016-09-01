@@ -1120,6 +1120,13 @@ new_child_iseq(rb_iseq_t *iseq, NODE *node,
     VALUE path_array = iseq->body->location.path_array;
 
     debugs("[new_child_iseq]> ---------------------------------------\n");
+    if (line_no > 10778221 && TYPE(path_array) != T_ARRAY)
+	fprintf(stderr, "\n ONE %d \n", line_no);
+    if (TYPE(path_array) == T_ARRAY)
+    ret_iseq = rb_iseq_new_with_opt(node, name,
+				    path_array, iseq_absolute_path(iseq),
+				    INT2FIX(line_no), parent, type, ISEQ_COMPILE_DATA(iseq)->option);
+    else
     ret_iseq = rb_iseq_new_with_opt(node, name,
 				    iseq_path(iseq), iseq_absolute_path(iseq),
 				    INT2FIX(line_no), parent, type, ISEQ_COMPILE_DATA(iseq)->option);
@@ -6960,6 +6967,8 @@ method_for_self(VALUE name, VALUE arg, rb_insn_func_t func,
     acc.arg = arg;
     acc.func = func;
     acc.line = caller_location(&path, &absolute_path);
+    if (acc.line > 10778221)
+	fprintf(stderr, "\nTWO %d\n", acc.line);
     return rb_iseq_new_with_opt((NODE *)IFUNC_NEW(build, (VALUE)&acc, 0),
 				rb_sym2str(name), path, absolute_path,
 				INT2FIX(acc.line), 0, ISEQ_TYPE_METHOD, 0);
